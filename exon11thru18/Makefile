@@ -1,12 +1,15 @@
 ACCESSION ?= EU600171
 FASTA_DIR := fasta
+BAM_DIR := bam
 SOURCE_FASTA := $(FASTA_DIR)/$(ACCESSION).fasta
 OUTPUT_FASTA := $(FASTA_DIR)/$(ACCESSION)_exons11-18.fasta
+BAM_OUTPUT := $(BAM_DIR)/$(ACCESSION)_exons11-18_vs_full.bam
+BAM_SAM := $(BAM_DIR)/$(ACCESSION)_exons11-18_vs_full.sam
 START ?= 145076
 END ?= 192172
 ENA_URL := https://www.ebi.ac.uk/ena/browser/api/fasta/$(ACCESSION)
 
-.PHONY: all genomic-span clean
+.PHONY: all genomic-span bam clean
 
 # Default: extract exon 11 through exon 18 as one continuous genomic interval.
 # This keeps all introns between the exons.
@@ -30,6 +33,20 @@ $(OUTPUT_FASTA): $(SOURCE_FASTA)
 		for (i = 1; i <= length(sequence); i += 60) print substr(sequence, i, 60) \
 	}' "$(SOURCE_FASTA)" > "$@.tmp" && mv "$@.tmp" "$@"
 
+$(BAM_SAM): $(SOURCE_FASTA) $(OUTPUT_FASTA)
+	mkdir -p "$(BAM_DIR)"
+	samtools faidx "$(SOURCE_FASTA)"
+	minimap2 -ax asm5 -t 8 "$(SOURCE_FASTA)" "$(OUTPUT_FASTA)" -o "$@"
+
+$(BAM_OUTPUT): $(BAM_SAM)
+	mkdir -p "$(BAM_DIR)"
+	samtools view -bS "$<" | samtools sort -o "$@.tmp" -
+	mv "$@.tmp" "$@"
+	samtools index "$@"
+
+bam: $(BAM_OUTPUT)
+
 clean:
 	rm -f "$(SOURCE_FASTA)" "$(SOURCE_FASTA).tmp" "$(OUTPUT_FASTA)" "$(OUTPUT_FASTA).tmp"
+	rm -rf "$(BAM_DIR)"
 	rmdir "$(FASTA_DIR)" 2>/dev/null || true

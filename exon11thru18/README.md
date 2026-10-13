@@ -46,6 +46,19 @@ to obtain seqeunce between exons 11-18:
 open -a TextEdit EU600171_exons11-18.fasta
 ```
 
+## visualize via ivg
+
+make bam files
+
+```bash
+cd /Users/kenny/Projects/BRAFmutants/exon11thru18 && mkdir -p bam && samtools faidx fasta/EU600171.fasta && minimap2 -ax asm5 -t 8 fasta/EU600171.fasta fasta/EU600171_exons11-18.fasta -o bam/EU600171_exons11-18_vs_full.sam && samtools view -bS bam/EU600171_exons11-18_vs_full.sam | samtools sort -o bam/EU600171_exons11-18_vs_full.bam - && samtools index bam/EU600171_exons11-18_vs_full.bam && ls -l bam
+```
+
+![alt text](<Screenshot 2026-10-13 at 3.40.50 PM.png>)
+
+![alt text](<Screenshot 2026-10-13 at 3.41.15 PM.png>)
+
+
 Output:
 
 ```bash

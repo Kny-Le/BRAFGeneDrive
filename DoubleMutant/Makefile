@@ -25,6 +25,7 @@ $(EMBL_FILE):
 	mkdir -p $(FASTA_DIR)
 	curl --fail --location --show-error --output "$@" "https://www.ebi.ac.uk/ena/browser/api/embl/$(ACCESSION)?download=true"
 
+# Generate the full genomic interval from exon 11 through exon 18, retaining introns.
 exon_fastas: $(EMBL_FILE) make_fastas.py requirements.txt
 	$(PYTHON) make_fastas.py "$(EMBL_FILE)" "$(FASTA_DIR)"
 
@@ -33,7 +34,7 @@ bam: fasta
 	command -v "$(SAMTOOLS)" >/dev/null || { echo "Install samtools to create/index the IGV alignment BAM." >&2; exit 1; }
 	mkdir -p "$(BAM_DIR)"
 	$(SAMTOOLS) faidx "$(WILDTYPE_EXONS)"
-	$(MINIMAP2) -ax sr "$(WILDTYPE_EXONS)" "$(MUTANT_EXONS)" | $(SAMTOOLS) sort -o "$(BAM_FILE)" -
+	$(MINIMAP2) -ax asm5 "$(WILDTYPE_EXONS)" "$(MUTANT_EXONS)" | $(SAMTOOLS) sort -o "$(BAM_FILE)" -
 	$(SAMTOOLS) index "$(BAM_FILE)"
 
 clean:

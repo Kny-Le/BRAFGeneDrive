@@ -11,8 +11,8 @@ ENA_URL := https://www.ebi.ac.uk/ena/browser/api/fasta/$(ACCESSION)
 
 .PHONY: all genomic-span bam clean
 
-# Default: extract exon 11 through exon 18 as one continuous genomic interval.
-# This keeps all introns between the exons.
+# Default: extract the 1-based inclusive interval from the first base of exon 11
+# through the last base of exon 18, retaining all intervening introns.
 all: $(OUTPUT_FASTA)
 
 genomic-span: $(OUTPUT_FASTA)
@@ -27,6 +27,7 @@ $(OUTPUT_FASTA): $(SOURCE_FASTA)
 	/^>/ { if (header == "") header = substr($$0, 2); next } \
 	{ gsub(/[[:space:]]/, ""); sequence = sequence $$0 } \
 	END { \
+		if (start < 1 || end < start) { print "Requested coordinates must be 1-based with end >= start" > "/dev/stderr"; exit 1 } \
 		if (length(sequence) < end) { print "FASTA sequence is shorter than requested end coordinate" > "/dev/stderr"; exit 1 } \
 		print ">" header " extracted genomic interval " start "-" end " (introns retained)"; \
 		sequence = substr(sequence, start, end - start + 1); \

@@ -30,8 +30,9 @@ make
 
 It downloads the reference and creates
 [fasta/EU600171_exons11-18.fasta](fasta/EU600171_exons11-18.fasta), containing
-one continuous genomic interval from the start of exon 11 to the end of exon 18.
-**The intervening introns are retained.** The output is 47,097 bases. The full
+one 1-based, inclusive genomic interval from the first base of exon 11 through
+the last base of exon 18. **The intervening introns are retained.** The output
+is 47,097 bases. The full
 reference is also kept at [fasta/EU600171.fasta](fasta/EU600171.fasta).
 
 To remove both FASTA files:
@@ -54,9 +55,9 @@ make bam files
 cd /Users/kenny/Projects/BRAFmutants/exon11thru18 && mkdir -p bam && samtools faidx fasta/EU600171.fasta && minimap2 -ax asm5 -t 8 fasta/EU600171.fasta fasta/EU600171_exons11-18.fasta -o bam/EU600171_exons11-18_vs_full.sam && samtools view -bS bam/EU600171_exons11-18_vs_full.sam | samtools sort -o bam/EU600171_exons11-18_vs_full.bam - && samtools index bam/EU600171_exons11-18_vs_full.bam && ls -l bam
 ```
 
-![alt text](<Screenshot 2026-10-13 at 3.40.50 PM.png>)
+![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 3.41.15 PM.png>)
 
-![alt text](<Screenshot 2026-10-13 at 3.41.15 PM.png>)
+![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 3.40.50 PM.png>)
 
 
 Output:

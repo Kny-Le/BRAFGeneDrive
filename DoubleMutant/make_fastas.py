@@ -39,26 +39,42 @@ def main() -> None:
     if len(cds_features) != 1:
         raise ValueError(f"Expected one BRAF CDS feature; found {len(cds_features)}")
 
-    exon_parts = list(cds_features[0].location.parts)
+    cds_feature = cds_features[0]
+    exon_parts = list(cds_feature.location.parts)
     if len(exon_parts) < LAST_EXON:
         raise ValueError(
             f"Expected at least {LAST_EXON} annotated CDS exon segments; found {len(exon_parts)}"
         )
 
-    coding_sequence = "".join(str(part.extract(record.seq)) for part in exon_parts).upper()
-    exon_start = sum(len(part) for part in exon_parts[: FIRST_EXON - 1])
-    exon_end = sum(len(part) for part in exon_parts[:LAST_EXON])
-    exon_sequence = coding_sequence[exon_start:exon_end]
+    interval_parts = exon_parts[FIRST_EXON - 1 : LAST_EXON]
+    interval_start = min(int(part.start) for part in interval_parts)
+    interval_end = max(int(part.end) for part in interval_parts)
+    genomic_sequence = str(record.seq[interval_start:interval_end]).upper()
+    if not genomic_sequence:
+        raise ValueError("The genomic interval spanning BRAF exons 11–18 is empty")
 
-    if not exon_sequence:
-        raise ValueError("The annotated BRAF CDS exon 11–18 sequence is empty")
-
-    mutant = list(exon_sequence)
+    mutant = list(genomic_sequence)
     for cds_position, expected_base, alternate_base in MUTATIONS:
-        fragment_index = cds_position - 1 - exon_start
+        cds_offset = cds_position - 1
+        genomic_position = None
+        for part in exon_parts:
+            if cds_offset < len(part):
+                if part.strand == -1:
+                    genomic_position = int(part.end) - 1 - cds_offset
+                    expected_base = expected_base.translate(str.maketrans("ACGT", "TGCA"))
+                    alternate_base = alternate_base.translate(str.maketrans("ACGT", "TGCA"))
+                else:
+                    genomic_position = int(part.start) + cds_offset
+                break
+            cds_offset -= len(part)
+
+        if genomic_position is None:
+            raise ValueError(f"CDS position {cds_position} is outside the annotated BRAF CDS")
+
+        fragment_index = genomic_position - interval_start
         if not 0 <= fragment_index < len(mutant):
             raise ValueError(
-                f"CDS position {cds_position} is not within the extracted exon 11–18 segment"
+                f"CDS position {cds_position} is not within the genomic interval spanning exons 11–18"
             )
         observed_base = mutant[fragment_index]
         if observed_base != expected_base:
@@ -69,12 +85,12 @@ def main() -> None:
 
     write_fasta(
         output_dir / "BRAF_exons11-18.fasta",
-        f"{record.id}|BRAF_CDS_exons_{FIRST_EXON}-{LAST_EXON}",
-        exon_sequence,
+        f"{record.id}|BRAF_genomic_interval_{interval_start + 1}-{interval_end}_introns_retained",
+        genomic_sequence,
     )
     write_fasta(
         output_dir / "BRAF_exons11-18_1526GtoA_1781AtoC.fasta",
-        f"{record.id}|BRAF_CDS_exons_{FIRST_EXON}-{LAST_EXON}|c.1526G>A_c.1781A>C",
+        f"{record.id}|BRAF_genomic_interval_{interval_start + 1}-{interval_end}|c.1526G>A_c.1781A>C",
         "".join(mutant),
     )
 

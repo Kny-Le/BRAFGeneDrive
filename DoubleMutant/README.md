@@ -52,11 +52,9 @@ minimap2 -ax sr \
 samtools index bam/BRAF_double_mutant_vs_wt.bam
 ```
 
-![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 2.30.59 PM.png>)
-
 ![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 2.30.59 PM-1.png>)
 
-![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 2.37.37 PM.png>)
+![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 2.56.26 PM.png>)
 
 ![IGV alignment screenshot](<screenshots/Screenshot 2026-10-13 at 2.48.50 PM.png>)
 

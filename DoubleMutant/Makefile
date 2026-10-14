@@ -1,7 +1,5 @@
 ACCESSION := EU600171.1
 FASTA_DIR := fasta
-FASTA_FILE := $(FASTA_DIR)/wtBRAF.fasta
-ENA_FASTA_URL := https://www.ebi.ac.uk/ena/browser/api/fasta/$(ACCESSION)?download=true
 EMBL_FILE := $(FASTA_DIR)/$(ACCESSION).embl
 WILDTYPE_EXONS := $(FASTA_DIR)/BRAF_exons11-18.fasta
 MUTANT_EXONS := $(FASTA_DIR)/BRAF_exons11-18_1526GtoA_1781AtoC.fasta
@@ -13,19 +11,15 @@ SAMTOOLS ?= samtools
 
 .PHONY: all fasta exon_fastas bam clean
 
-all: fasta
+all: exon_fastas
 
-fasta: $(FASTA_FILE) exon_fastas
-
-$(FASTA_FILE):
-	mkdir -p $(FASTA_DIR)
-	curl --fail --location --show-error --output "$@" "$(ENA_FASTA_URL)"
+fasta: exon_fastas
 
 $(EMBL_FILE):
 	mkdir -p $(FASTA_DIR)
 	curl --fail --location --show-error --output "$@" "https://www.ebi.ac.uk/ena/browser/api/embl/$(ACCESSION)?download=true"
 
-# Generate the full genomic interval from exon 11 through exon 18, retaining introns.
+# Generate spliced coding sequences for exons 11–18; introns are excluded.
 exon_fastas: $(EMBL_FILE) make_fastas.py requirements.txt
 	$(PYTHON) make_fastas.py "$(EMBL_FILE)" "$(FASTA_DIR)"
 
@@ -38,4 +32,4 @@ bam: fasta
 	$(SAMTOOLS) index "$(BAM_FILE)"
 
 clean:
-	rm -f "$(FASTA_FILE)" "$(EMBL_FILE)" "$(WILDTYPE_EXONS)" "$(MUTANT_EXONS)" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoC_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18.fasta.fai" "$(BAM_FILE)" "$(BAM_FILE).bai" "$(FASTA_DIR)/BRAF_exons11-18_D594A_R509H.fasta"
+	rm -f "$(EMBL_FILE)" "$(FASTA_DIR)/wtBRAF.fasta" "$(FASTA_DIR)/wtBRAF.fasta.fai" "$(WILDTYPE_EXONS)" "$(MUTANT_EXONS)" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoC_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18.fasta.fai" "$(BAM_FILE)" "$(BAM_FILE).bai" "$(FASTA_DIR)/BRAF_exons11-18_D594A_R509H.fasta"

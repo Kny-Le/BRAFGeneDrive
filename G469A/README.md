@@ -6,6 +6,10 @@ This is another constitutive dimer. In this directory, I have the BRAF exons 11 
 
 This is a SNP within the protein kinase domain of BRAF, causing increased BRAF kinase activity and thus increases activation of ERK leading to oncogenesis. This mutation takes takes place at position 1406 (G > C) accoding to cDNA
 
+WT: GGA (Glycine)
+
+Mutant: GCA (Alanine)
+
 https://ckb.genomenon.com/geneVariant/show?geneVariantId=452
 
 ## R509H

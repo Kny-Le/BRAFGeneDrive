@@ -61,11 +61,11 @@ minimap2 -ax asm5 \
 samtools index bam/BRAF_D594A_R509H_vs_wt.bam
 ```
 
-![alt text](<Screenshot 2026-10-16 at 4.28.53 PM.png>)
+![D594A alignment](<screenshots/Screenshot 2026-10-16 at 4.28.53 PM.png>)
 
-![alt text](<Screenshot 2026-10-16 at 4.29.24 PM.png>)
+![D594A alignment](<screenshots/Screenshot 2026-10-16 at 4.29.24 PM.png>)
 
-![alt text](<Screenshot 2026-10-16 at 4.30.06 PM.png>)
+![D594A alignment](<screenshots/Screenshot 2026-10-16 at 4.30.06 PM.png>)
 
 
 ## Obtain sequence

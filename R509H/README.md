@@ -8,7 +8,7 @@ This mutant is at position 1526 (G > A) in the nucleotide sequence on exon 13
 
 WT: CGA (Arginine) Mutant: CAA (Histidine)
 
-www-ncbi-nlm-nih-gov.exaccess.libraries.psu.edu/clinvar/RCV000427215/
+www-ncbi-nlm-nih-gov.ezaccess.libraries.psu.edu/clinvar/RCV000427215/
 
 
 # Generate mutants:

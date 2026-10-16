@@ -2,9 +2,11 @@ ACCESSION := EU600171.1
 FASTA_DIR := fasta
 EMBL_FILE := $(FASTA_DIR)/$(ACCESSION).embl
 WILDTYPE_EXONS := $(FASTA_DIR)/BRAF_exons11-18.fasta
-MUTANT_EXONS := $(FASTA_DIR)/BRAF_exons11-18_1526GtoA_1781AtoC.fasta
+D594A_EXONS := $(FASTA_DIR)/BRAF_exons11-18_D594A.fasta
+D594A_R509H_EXONS := $(FASTA_DIR)/BRAF_exons11-18_D594A_R509H.fasta
 BAM_DIR := bam
-BAM_FILE := $(BAM_DIR)/BRAF_double_mutant_vs_wt.bam
+BAM_D594A := $(BAM_DIR)/BRAF_D594A_vs_wt.bam
+BAM_D594A_R509H := $(BAM_DIR)/BRAF_D594A_R509H_vs_wt.bam
 PYTHON ?= python3
 MINIMAP2 ?= minimap2
 SAMTOOLS ?= samtools
@@ -19,7 +21,7 @@ $(EMBL_FILE):
 	mkdir -p $(FASTA_DIR)
 	curl --fail --location --show-error --output "$@" "https://www.ebi.ac.uk/ena/browser/api/embl/$(ACCESSION)?download=true"
 
-# Generate spliced coding sequences for exons 11–18; introns are excluded.
+# Generate WT, D594A-only, and D594A+R509H spliced CDS sequences for exons 11–18.
 exon_fastas: $(EMBL_FILE) make_fastas.py requirements.txt
 	$(PYTHON) make_fastas.py "$(EMBL_FILE)" "$(FASTA_DIR)"
 
@@ -28,8 +30,10 @@ bam: fasta
 	command -v "$(SAMTOOLS)" >/dev/null || { echo "Install samtools to create/index the IGV alignment BAM." >&2; exit 1; }
 	mkdir -p "$(BAM_DIR)"
 	$(SAMTOOLS) faidx "$(WILDTYPE_EXONS)"
-	$(MINIMAP2) -ax asm5 "$(WILDTYPE_EXONS)" "$(MUTANT_EXONS)" | $(SAMTOOLS) sort -o "$(BAM_FILE)" -
-	$(SAMTOOLS) index "$(BAM_FILE)"
+	$(MINIMAP2) -ax asm5 "$(WILDTYPE_EXONS)" "$(D594A_EXONS)" | $(SAMTOOLS) sort -o "$(BAM_D594A)" -
+	$(SAMTOOLS) index "$(BAM_D594A)"
+	$(MINIMAP2) -ax asm5 "$(WILDTYPE_EXONS)" "$(D594A_R509H_EXONS)" | $(SAMTOOLS) sort -o "$(BAM_D594A_R509H)" -
+	$(SAMTOOLS) index "$(BAM_D594A_R509H)"
 
 clean:
-	rm -f "$(EMBL_FILE)" "$(FASTA_DIR)/wtBRAF.fasta" "$(FASTA_DIR)/wtBRAF.fasta.fai" "$(WILDTYPE_EXONS)" "$(MUTANT_EXONS)" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoC_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18.fasta.fai" "$(BAM_FILE)" "$(BAM_FILE).bai" "$(FASTA_DIR)/BRAF_exons11-18_D594A_R509H.fasta"
+	rm -f "$(EMBL_FILE)" "$(FASTA_DIR)/wtBRAF.fasta" "$(FASTA_DIR)/wtBRAF.fasta.fai" "$(WILDTYPE_EXONS)" "$(D594A_EXONS)" "$(D594A_R509H_EXONS)" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoA_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoC_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18.fasta.fai" "$(BAM_DIR)/BRAF_double_mutant_vs_wt.bam" "$(BAM_DIR)/BRAF_double_mutant_vs_wt.bam.bai" "$(BAM_D594A)" "$(BAM_D594A).bai" "$(BAM_D594A_R509H)" "$(BAM_D594A_R509H).bai"

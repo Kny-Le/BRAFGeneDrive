@@ -1,8 +1,12 @@
-# Double Mutant BRAF (D594A/R509H)
+# BRAF D594A/R509H
 
 The idea is that the BRAF D594A kinase dead mutant paradoxically leads to increased stimulation of the MAPK pathway. The R509H mutant acts as a structural wedge in the natural RAF-RAF homodimer and prevents the monomer from spontaneously binding to other RAFS on its own.
 
 ## D594A
+
+This is a less aggressive mutation, so the addition of R509H may not be necessary.
+
+https://pmc.ncbi.nlm.nih.gov/articles/PMC10585750/
 
 This mutant is at position 1781 (A > C) in the nucleotide sequence on exon 15
 
@@ -18,7 +22,7 @@ This mutant is at position 1526 (G > A) in the nucleotide sequence on exon 13
 WT: CGA (Arginine)
 Mutant: CAA (Histidine)
 
-www-ncbi-nlm-nih-gov.exaccess.libraries.psu.edu/clinvar/RCV000427215/
+www-ncbi-nlm-nih-gov.ezaccess.libraries.psu.edu/clinvar/RCV000427215/
 
 # Program
 
@@ -34,11 +38,7 @@ run:
 make
 ```
 
-![IGV alignment screenshot](<screenshots/Screenshot 2026-10-14 at 9.07.51 AM.png>)
-
-![IGV alignment screenshot](<screenshots/Screenshot 2026-10-14 at 9.06.46 AM.png>)
-
-The Python script uses the annotated BRAF CDS to concatenate only the coding bases of exons 11–18; introns are excluded. It checks and applies c.1526G>A and c.1781A>C at their positions in the spliced CDS. Both generated FASTAs contain the same 987 exon bases, with the mutant FASTA differing at those two bases only. Note that c.1526G>A alone does not encode R509H, which also needs c.1527A>T.
+The Python script uses the annotated BRAF CDS to concatenate only the coding bases of exons 11–18; introns are excluded. It generates a D594A-only FASTA with c.1781A>C and a combined D594A+R509H FASTA with c.1526G>A, c.1527A>T, and c.1781A>C. The additional c.1527A>T change is required for the R509H substitution. Each mutant FASTA contains the same 987 bases as the WT exon sequence.
 
 ## visualization via IGV
 
@@ -50,11 +50,23 @@ mkdir -p bam
 
 minimap2 -ax asm5 \
   fasta/BRAF_exons11-18.fasta \
-  fasta/BRAF_exons11-18_1526GtoA_1781AtoC.fasta \
-  | samtools sort -o bam/BRAF_double_mutant_vs_wt.bam
+  fasta/BRAF_exons11-18_D594A.fasta \
+  | samtools sort -o bam/BRAF_D594A_vs_wt.bam -
+samtools index bam/BRAF_D594A_vs_wt.bam
 
-samtools index bam/BRAF_double_mutant_vs_wt.bam
+minimap2 -ax asm5 \
+  fasta/BRAF_exons11-18.fasta \
+  fasta/BRAF_exons11-18_D594A_R509H.fasta \
+  | samtools sort -o bam/BRAF_D594A_R509H_vs_wt.bam -
+samtools index bam/BRAF_D594A_R509H_vs_wt.bam
 ```
+
+![alt text](<Screenshot 2026-10-16 at 4.28.53 PM.png>)
+
+![alt text](<Screenshot 2026-10-16 at 4.29.24 PM.png>)
+
+![alt text](<Screenshot 2026-10-16 at 4.30.06 PM.png>)
+
 
 ## Obtain sequence
 
@@ -63,15 +75,40 @@ cd fasta
 ```
 
 ```bash
-open -a TextEdit BRAF_exons11-18_1526GtoA_1781AtoC.fasta
+open -a TextEdit BRAF_exons11-18_D594A_R509H.fasta
 ```
 
+```bash
+open -a TextEdit BRAF_exons11-18_D594A.fasta
+```
+
+BRAF D594A/R509H
 
 ```bash
 AAAACACTTGGTAGACGGGACTCGAGTGATGATTGGGAGATTCCTGATGGGCAGATTACAGTGGGACAAA
 GAATTGGATCTGGATCATTTGGAACAGTCTACAAGGGAAAGTGGCATGGTGATGTGGCAGTGAAAATGTT
 GAATGTGACAGCACCTACACCTCAGCAGTTACAAGCCTTCAAAAATGAAGTAGGAGTACTCAGGAAAACA
-CAACATGTGAATATCCTACTCTTCATGGGCTATTCCACAAAGCCACAACTGGCTATTGTTACCCAGTGGT
+CATCATGTGAATATCCTACTCTTCATGGGCTATTCCACAAAGCCACAACTGGCTATTGTTACCCAGTGGT
+GTGAGGGCTCCAGCTTGTATCACCATCTCCATATCATTGAGACCAAATTTGAGATGATCAAACTTATAGA
+TATTGCACGACAGACTGCACAGGGCATGGATTACTTACACGCCAAGTCAATCATCCACAGAGACCTCAAG
+AGTAATAATATATTTCTTCATGAAGACCTCACAGTAAAAATAGGTGCTTTTGGTCTAGCTACAGTGAAAT
+CTCGATGGAGTGGGTCCCATCAGTTTGAACAGTTGTCTGGATCCATTTTGTGGATGGCACCAGAAGTCAT
+CAGAATGCAAGATAAAAATCCATACAGCTTTCAGTCAGATGTATATGCATTTGGAATTGTTCTGTATGAA
+TTGATGACTGGACAGTTACCTTATTCAAACATCAACAACAGGGACCAGATAATTTTTATGGTGGGACGAG
+GATACCTGTCTCCAGATCTCAGTAAGGTACGGAGTAACTGTCCAAAAGCCATGAAGAGATTAATGGCAGA
+GTGCCTCAAAAAGAAAAGAGATGAGAGACCACTCTTTCCCCAAATTCTCGCCTCTATTGAGCTGCTGGCC
+CGCTCATTGCCAAAAATTCACCGCAGTGCATCAGAACCCTCCTTGAATCGGGCTGGTTTCCAAACAGAGG
+ATTTTAGTCTATATGCTTGTGCTTCTCCAAAAACACCCATCCAGGCAGGGGGATATGGTGCGTTTCCTGT
+CCACTGA
+```
+
+BRAF D594A sequence
+
+```bash
+AAAACACTTGGTAGACGGGACTCGAGTGATGATTGGGAGATTCCTGATGGGCAGATTACAGTGGGACAAA
+GAATTGGATCTGGATCATTTGGAACAGTCTACAAGGGAAAGTGGCATGGTGATGTGGCAGTGAAAATGTT
+GAATGTGACAGCACCTACACCTCAGCAGTTACAAGCCTTCAAAAATGAAGTAGGAGTACTCAGGAAAACA
+CGACATGTGAATATCCTACTCTTCATGGGCTATTCCACAAAGCCACAACTGGCTATTGTTACCCAGTGGT
 GTGAGGGCTCCAGCTTGTATCACCATCTCCATATCATTGAGACCAAATTTGAGATGATCAAACTTATAGA
 TATTGCACGACAGACTGCACAGGGCATGGATTACTTACACGCCAAGTCAATCATCCACAGAGACCTCAAG
 AGTAATAATATATTTCTTCATGAAGACCTCACAGTAAAAATAGGTGCTTTTGGTCTAGCTACAGTGAAAT

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract BRAF CDS exons 11–18 and apply the requested double mutation."""
+"""Extract BRAF CDS exons 11–18 and generate the requested mutant sequences."""
 
 from pathlib import Path
 import sys
@@ -9,9 +9,11 @@ from Bio import SeqIO
 
 FIRST_EXON = 11
 LAST_EXON = 18
-MUTATIONS = (
-    (1526, "G", "A"),  # c.1526G>A; CGA becomes CAA in this reference
-    (1781, "A", "C"),  # c.1781A>C
+D594A_MUTATIONS = ((1781, "A", "C"),)
+D594A_R509H_MUTATIONS = (
+    (1526, "G", "A"),  # c.1526G>A
+    (1527, "A", "T"),  # c.1527A>T; together these changes encode R509H
+    (1781, "A", "C"),  # c.1781A>C; D594A
 )
 
 
@@ -20,6 +22,27 @@ def write_fasta(path: Path, header: str, sequence: str) -> None:
         output.write(f">{header}\n")
         for offset in range(0, len(sequence), 70):
             output.write(sequence[offset : offset + 70] + "\n")
+
+
+def apply_mutations(
+    exon_sequence: str,
+    first_exon_cds_offset: int,
+    mutations: tuple[tuple[int, str, str], ...],
+) -> str:
+    mutant = list(exon_sequence)
+    for cds_position, expected_base, alternate_base in mutations:
+        fragment_index = cds_position - 1 - first_exon_cds_offset
+        if not 0 <= fragment_index < len(mutant):
+            raise ValueError(
+                f"CDS position {cds_position} is not within the spliced exon 11–18 sequence"
+            )
+        observed_base = mutant[fragment_index]
+        if observed_base != expected_base:
+            raise ValueError(
+                f"At CDS position {cds_position}, expected {expected_base} but found {observed_base}"
+            )
+        mutant[fragment_index] = alternate_base
+    return "".join(mutant)
 
 
 def main() -> None:
@@ -52,29 +75,20 @@ def main() -> None:
     if not exon_sequence:
         raise ValueError("The spliced BRAF CDS sequence for exons 11–18 is empty")
 
-    mutant = list(exon_sequence)
-    for cds_position, expected_base, alternate_base in MUTATIONS:
-        fragment_index = cds_position - 1 - first_exon_cds_offset
-        if not 0 <= fragment_index < len(mutant):
-            raise ValueError(
-                f"CDS position {cds_position} is not within the spliced exon 11–18 sequence"
-            )
-        observed_base = mutant[fragment_index]
-        if observed_base != expected_base:
-            raise ValueError(
-                f"At CDS position {cds_position}, expected {expected_base} but found {observed_base}"
-            )
-        mutant[fragment_index] = alternate_base
-
     write_fasta(
         output_dir / "BRAF_exons11-18.fasta",
         f"{record.id}|BRAF_CDS_exons_{FIRST_EXON}-{LAST_EXON}_spliced_introns_excluded",
         exon_sequence,
     )
     write_fasta(
-        output_dir / "BRAF_exons11-18_1526GtoA_1781AtoC.fasta",
-        f"{record.id}|BRAF_CDS_exons_{FIRST_EXON}-{LAST_EXON}|c.1526G>A_c.1781A>C",
-        "".join(mutant),
+        output_dir / "BRAF_exons11-18_D594A.fasta",
+        f"{record.id}|BRAF_CDS_exons_{FIRST_EXON}-{LAST_EXON}|D594A_c.1781A>C",
+        apply_mutations(exon_sequence, first_exon_cds_offset, D594A_MUTATIONS),
+    )
+    write_fasta(
+        output_dir / "BRAF_exons11-18_D594A_R509H.fasta",
+        f"{record.id}|BRAF_CDS_exons_{FIRST_EXON}-{LAST_EXON}|D594A_R509H_c.1526G>A_c.1527A>T_c.1781A>C",
+        apply_mutations(exon_sequence, first_exon_cds_offset, D594A_R509H_MUTATIONS),
     )
 
 

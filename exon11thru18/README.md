@@ -69,9 +69,7 @@ samtools index bam/NM_004333_exons11-18_vs_ref.bam
 
 ![IGV alignment screenshot](<screenshots/Screenshot 2026-10-14 at 9.27.30 AM.png>)
 
-The long sequence block below is the previous intron-retaining genomic interval and is **not** the current generated output. The current exon-only sequence is written to the FASTA file above.
-
-Legacy interval output (contains introns; not current output):
+WT exon (11-18) nucleotide sequence:
 
 ```bash
 AAAACACTTGGTAGACGGGACTCGAGTGATGATTGGGAGATTCCTGATGGGCAGATTACA

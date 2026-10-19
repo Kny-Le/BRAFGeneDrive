@@ -1,6 +1,7 @@
-ACCESSION := EU600171.1
+ACCESSION := NM_004333.6
 FASTA_DIR := fasta
-EMBL_FILE := $(FASTA_DIR)/$(ACCESSION).embl
+REFERENCE_DIR := reference
+GB_FILE := $(REFERENCE_DIR)/$(ACCESSION).gb
 WILDTYPE_EXONS := $(FASTA_DIR)/BRAF_exons11-18.fasta
 D594A_EXONS := $(FASTA_DIR)/BRAF_exons11-18_D594A.fasta
 D594A_R509H_EXONS := $(FASTA_DIR)/BRAF_exons11-18_D594A_R509H.fasta
@@ -10,20 +11,22 @@ BAM_D594A_R509H := $(BAM_DIR)/BRAF_D594A_R509H_vs_wt.bam
 PYTHON ?= python3
 MINIMAP2 ?= minimap2
 SAMTOOLS ?= samtools
+NCBI_URL := https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=$(ACCESSION)&rettype=gb&retmode=text
 
 .PHONY: all fasta exon_fastas bam clean
+.DELETE_ON_ERROR:
 
 all: exon_fastas
 
 fasta: exon_fastas
 
-$(EMBL_FILE):
-	mkdir -p $(FASTA_DIR)
-	curl --fail --location --show-error --output "$@" "https://www.ebi.ac.uk/ena/browser/api/embl/$(ACCESSION)?download=true"
+$(GB_FILE):
+	mkdir -p "$(REFERENCE_DIR)"
+	curl --fail --location --show-error --output "$@.tmp" "$(NCBI_URL)" && mv "$@.tmp" "$@"
 
 # Generate WT, D594A-only, and D594A+R509H spliced CDS sequences for exons 11–18.
-exon_fastas: $(EMBL_FILE) make_fastas.py requirements.txt
-	$(PYTHON) make_fastas.py "$(EMBL_FILE)" "$(FASTA_DIR)"
+exon_fastas: $(GB_FILE) make_fastas.py requirements.txt
+	$(PYTHON) make_fastas.py "$(GB_FILE)" "$(FASTA_DIR)"
 
 bam: fasta
 	command -v "$(MINIMAP2)" >/dev/null || { echo "Install minimap2 to create the IGV alignment BAM." >&2; exit 1; }
@@ -36,4 +39,5 @@ bam: fasta
 	$(SAMTOOLS) index "$(BAM_D594A_R509H)"
 
 clean:
-	rm -f "$(EMBL_FILE)" "$(FASTA_DIR)/wtBRAF.fasta" "$(FASTA_DIR)/wtBRAF.fasta.fai" "$(WILDTYPE_EXONS)" "$(D594A_EXONS)" "$(D594A_R509H_EXONS)" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoA_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18_1526GtoC_1781AtoC.fasta" "$(FASTA_DIR)/BRAF_exons11-18.fasta.fai" "$(BAM_DIR)/BRAF_double_mutant_vs_wt.bam" "$(BAM_DIR)/BRAF_double_mutant_vs_wt.bam.bai" "$(BAM_D594A)" "$(BAM_D594A).bai" "$(BAM_D594A_R509H)" "$(BAM_D594A_R509H).bai"
+	rm -f "$(GB_FILE)" "$(GB_FILE).tmp" "$(WILDTYPE_EXONS)" "$(D594A_EXONS)" "$(D594A_R509H_EXONS)" "$(FASTA_DIR)/BRAF_exons11-18.fasta.fai" "$(BAM_D594A)" "$(BAM_D594A).bai" "$(BAM_D594A_R509H)" "$(BAM_D594A_R509H).bai"
+	rmdir "$(FASTA_DIR)" "$(REFERENCE_DIR)" "$(BAM_DIR)" 2>/dev/null || true

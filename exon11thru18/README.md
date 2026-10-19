@@ -1,17 +1,17 @@
 # Wildtype BRAF exons 11–18 spliced sequence
 
-The source is genomic DNA record [EU600171](https://www.ebi.ac.uk/ena/browser/view/EU600171). Its annotated exons are:
+The source is the RefSeq mRNA record [NM_004333.6](https://www.ncbi.nlm.nih.gov/nuccore/NM_004333.6/) (MANE Select). Its CDS is 227–2527, and the coding portions of exons 11–18 are:
 
-| Exon | 1-based inclusive coordinates |
+| Exon | 1-based inclusive mRNA coordinates |
 | --- | ---: |
-| 11 | 145076–145193 |
-| 12 | 148694–148778 |
-| 13 | 149681–149857 |
-| 14 | 172536–172582 |
-| 15 | 173376–173494 |
-| 16 | 177351–177482 |
-| 17 | 186823–186957 |
-| 18 | 191999–192172 |
+| 11 | 1541–1658 |
+| 12 | 1659–1743 |
+| 13 | 1744–1920 |
+| 14 | 1921–1967 |
+| 15 | 1968–2086 |
+| 16 | 2087–2218 |
+| 17 | 2219–2353 |
+| 18 | 2354–2527 |
 
 
 ## Makefile
@@ -28,12 +28,13 @@ copy and past makefile from this repository, then run:
 make
 ```
 
-It downloads the reference to `reference/EU600171.fasta` and creates
-[fasta/EU600171_exons11-18.fasta](fasta/EU600171_exons11-18.fasta), containing
-the concatenated exon sequences at the 1-based inclusive coordinates above.
-**Only exon bases are included; intervening introns are excluded.** The output
+It downloads the reference to `reference/NM_004333.6.fasta` and creates
+[fasta/NM_004333_exons11-18.fasta](fasta/NM_004333_exons11-18.fasta), containing
+the concatenated coding exon sequences at the 1-based inclusive coordinates above.
+**Only coding exon bases are included; UTRs are excluded.** The output
 is 987 bases. The full reference is kept separately under `reference/` for
-extraction and alignment.
+extraction and alignment. The exon boundaries are also recorded in
+[exon11thru18.gff3](exon11thru18.gff3).
 
 To remove both FASTA files:
 
@@ -44,7 +45,7 @@ make clean
 to obtain seqeunce between exons 11-18:
 
 ```bash
-open -a TextEdit EU600171_exons11-18.fasta
+open -a TextEdit NM_004333_exons11-18.fasta
 ```
 
 ## visualize via ivg
@@ -55,11 +56,11 @@ This requires `minimap2` and `samtools` to be installed and available on `PATH`.
 
 ```bash
 cd /Users/kenny/Projects/BRAFmutants/exon11thru18
-samtools faidx reference/EU600171.fasta
+samtools faidx reference/NM_004333.6.fasta
 mkdir -p bam
-minimap2 -ax splice -t 8 reference/EU600171.fasta fasta/EU600171_exons11-18.fasta \
-  | samtools sort -o bam/EU600171_exons11-18_vs_full.bam -
-samtools index bam/EU600171_exons11-18_vs_full.bam
+minimap2 -ax asm5 -t 8 reference/NM_004333.6.fasta fasta/NM_004333_exons11-18.fasta \
+  | samtools sort -o bam/NM_004333_exons11-18_vs_ref.bam -
+samtools index bam/NM_004333_exons11-18_vs_ref.bam
 ```
 
 ![IGV alignment screenshot](<screenshots/Screenshot 2026-10-14 at 9.25.00 AM.png>)

@@ -1,10 +1,10 @@
 ##gff-version 3
-##sequence-region ENA|EU600171|EU600171.1 1 987
-ENA|EU600171|EU600171.1	EU600171	exon	1	118	.	+	.	ID=exon11;Name=exon_11;gene_name=BRAF;genomic_start=145076;genomic_end=145193
-ENA|EU600171|EU600171.1	EU600171	exon	119	203	.	+	.	ID=exon12;Name=exon_12;gene_name=BRAF;genomic_start=148694;genomic_end=148778
-ENA|EU600171|EU600171.1	EU600171	exon	204	380	.	+	.	ID=exon13;Name=exon_13;gene_name=BRAF;genomic_start=149681;genomic_end=149857
-ENA|EU600171|EU600171.1	EU600171	exon	381	427	.	+	.	ID=exon14;Name=exon_14;gene_name=BRAF;genomic_start=172536;genomic_end=172582
-ENA|EU600171|EU600171.1	EU600171	exon	428	546	.	+	.	ID=exon15;Name=exon_15;gene_name=BRAF;genomic_start=173376;genomic_end=173494
-ENA|EU600171|EU600171.1	EU600171	exon	547	678	.	+	.	ID=exon16;Name=exon_16;gene_name=BRAF;genomic_start=177351;genomic_end=177482
-ENA|EU600171|EU600171.1	EU600171	exon	679	813	.	+	.	ID=exon17;Name=exon_17;gene_name=BRAF;genomic_start=186823;genomic_end=186957
-ENA|EU600171|EU600171.1	EU600171	exon	814	987	.	+	.	ID=exon18;Name=exon_18;gene_name=BRAF;genomic_start=191999;genomic_end=192172
+##sequence-region NM_004333.6 1 987
+NM_004333.6	NM_004333.6	exon	1	118	.	+	.	ID=exon11;Name=exon_11;gene_name=BRAF;transcript_start=1541;transcript_end=1658
+NM_004333.6	NM_004333.6	exon	119	203	.	+	.	ID=exon12;Name=exon_12;gene_name=BRAF;transcript_start=1659;transcript_end=1743
+NM_004333.6	NM_004333.6	exon	204	380	.	+	.	ID=exon13;Name=exon_13;gene_name=BRAF;transcript_start=1744;transcript_end=1920
+NM_004333.6	NM_004333.6	exon	381	427	.	+	.	ID=exon14;Name=exon_14;gene_name=BRAF;transcript_start=1921;transcript_end=1967
+NM_004333.6	NM_004333.6	exon	428	546	.	+	.	ID=exon15;Name=exon_15;gene_name=BRAF;transcript_start=1968;transcript_end=2086
+NM_004333.6	NM_004333.6	exon	547	678	.	+	.	ID=exon16;Name=exon_16;gene_name=BRAF;transcript_start=2087;transcript_end=2218
+NM_004333.6	NM_004333.6	exon	679	813	.	+	.	ID=exon17;Name=exon_17;gene_name=BRAF;transcript_start=2219;transcript_end=2353
+NM_004333.6	NM_004333.6	exon	814	987	.	+	.	ID=exon18;Name=exon_18;gene_name=BRAF;transcript_start=2354;transcript_end=2527

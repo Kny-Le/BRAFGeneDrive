@@ -1,26 +1,28 @@
-ACCESSION ?= EU600171
+ACCESSION ?= NM_004333.6
 FASTA_DIR := fasta
 REFERENCE_DIR := reference
 BAM_DIR := bam
+STEM := NM_004333_exons11-18
 SOURCE_FASTA := $(REFERENCE_DIR)/$(ACCESSION).fasta
-OUTPUT_FASTA := $(FASTA_DIR)/$(ACCESSION)_exons11-18.fasta
-BAM_OUTPUT := $(BAM_DIR)/$(ACCESSION)_exons11-18_vs_full.bam
-BAM_SAM := $(BAM_DIR)/$(ACCESSION)_exons11-18_vs_full.sam
+OUTPUT_FASTA := $(FASTA_DIR)/$(STEM).fasta
+BAM_OUTPUT := $(BAM_DIR)/$(STEM)_vs_ref.bam
+BAM_SAM := $(BAM_DIR)/$(STEM)_vs_ref.sam
 SAMTOOLS ?= samtools
 MINIMAP2 ?= minimap2
-EXON_RANGES ?= 145076-145193,148694-148778,149681-149857,172536-172582,173376-173494,177351-177482,186823-186957,191999-192172
-ENA_URL := https://www.ebi.ac.uk/ena/browser/api/fasta/$(ACCESSION)
+# Coding portions of BRAF exons 11–18 in NM_004333.6 (the CDS is 227–2527).
+EXON_RANGES ?= 1541-1658,1659-1743,1744-1920,1921-1967,1968-2086,2087-2218,2219-2353,2354-2527
+NCBI_URL := https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=$(ACCESSION)&rettype=fasta&retmode=text
 
 .PHONY: all exons bam clean
 
-# Default: concatenate the annotated exon 11–18 ranges; omit every intron.
+# Default: concatenate the annotated exon 11–18 coding ranges; UTRs are excluded.
 all: $(OUTPUT_FASTA)
 
 exons: $(OUTPUT_FASTA)
 
 $(SOURCE_FASTA):
 	mkdir -p "$(REFERENCE_DIR)"
-	curl --fail --location --show-error --output "$@.tmp" "$(ENA_URL)" && mv "$@.tmp" "$@"
+	curl --fail --location --show-error --output "$@.tmp" "$(NCBI_URL)" && mv "$@.tmp" "$@"
 
 $(OUTPUT_FASTA): $(SOURCE_FASTA)
 	mkdir -p "$(FASTA_DIR)"

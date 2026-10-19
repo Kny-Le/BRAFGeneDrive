@@ -4,7 +4,15 @@ This is another constitutive dimer. In this directory, I have the BRAF exons 11 
 
 ## G469A
 
-This is a SNP within the protein kinase domain of BRAF, causing increased BRAF kinase activity and thus increases activation of ERK leading to oncogenesis. This mutation takes takes place at position 1406 (G > C) accoding to cDNA
+This is a Class II BRAF mutant on the phosphate binidng loop (P-loop)/kinase domain, resulting in constitutivly active state of the enzyme responsible for protein localization to the mitocondria.
+
+https://www.sciencedirect.com/science/article/pii/S1535610815002925
+
+This is a SNP within the protein kinase domain of BRAF, causing increased BRAF kinase activity and thus increases activation of ERK leading to oncogenesis. This mutation takes takes place on exon 11 at position 1406 (G > C) accoding to cDNA
+
+WT: GGA (Glycine)
+
+Mutant: GCA (Alanine)
 
 WT: GGA (Glycine)
 
@@ -22,6 +30,8 @@ Mutant: CAA (Histidine)
 www-ncbi-nlm-nih-gov.exaccess.libraries.psu.edu/clinvar/RCV000427215/
 
 # Obtain files
+
+The FASTAs are built from the BRAF mRNA record [NM_004333.6](https://www.ncbi.nlm.nih.gov/nuccore/NM_004333.6/) (RefSeq, MANE Select), using only the coding bases of exons 11–18.
 
 ## Generate Makefile
 

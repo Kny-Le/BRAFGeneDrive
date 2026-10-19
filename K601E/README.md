@@ -31,10 +31,12 @@ run:
 make
 ```
 
+The FASTAs are built from the BRAF mRNA record [NM_004333.6](https://www.ncbi.nlm.nih.gov/nuccore/NM_004333.6/) (RefSeq, MANE Select), using only the coding bases of exons 11–18.
+
 To make BAM files, paste this into your terminal
 
 ```bash
-cd /Users/kenny/Projects/BRAFGeneDrive/BRAFK601E || exit 1
+cd /Users/kenny/Projects/BRAFGeneDrive/K601E || exit 1
 set -euo pipefail
 
 command -v minimap2 >/dev/null || { echo "minimap2 is required"; exit 1; }

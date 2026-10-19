@@ -38,7 +38,7 @@ run:
 make
 ```
 
-The Python script uses the annotated BRAF CDS to concatenate only the coding bases of exons 11–18; introns are excluded. It generates a D594A-only FASTA with c.1781A>C and a combined D594A+R509H FASTA with c.1526G>A, c.1527A>T, and c.1781A>C. The additional c.1527A>T change is required for the R509H substitution. Each mutant FASTA contains the same 987 bases as the WT exon sequence.
+The Python script reads the annotated BRAF mRNA record [NM_004333.6](https://www.ncbi.nlm.nih.gov/nuccore/NM_004333.6/) (RefSeq, MANE Select) and concatenates only the coding bases of exons 11–18; introns are excluded. It generates a D594A-only FASTA with c.1781A>C and a combined D594A+R509H FASTA with c.1526G>A, c.1527A>T, and c.1781A>C. The additional c.1527A>T change is required for the R509H substitution. Each mutant FASTA contains the same 987 bases as the WT exon sequence.
 
 ## visualization via IGV
 
